@@ -59,7 +59,7 @@ public class CalendarControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(req)))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.error").value("Validation failed"));
+            .andExpect(jsonPath("$.message").value("Validation failed"));
     }
 
     @Test

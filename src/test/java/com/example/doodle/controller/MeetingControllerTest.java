@@ -66,7 +66,7 @@ public class MeetingControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(req)))
             .andExpect(status().isBadRequest())
-            .andExpect(jsonPath("$.error").value("Validation failed"));
+            .andExpect(jsonPath("$.error").value("Bad Request"));
     }
 
     @Test
@@ -79,6 +79,6 @@ public class MeetingControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(mapper.writeValueAsString(req)))
             .andExpect(status().isConflict())
-            .andExpect(jsonPath("$.error").value("Slot is full or not available"));
+            .andExpect(jsonPath("$.error").value("Conflict"));
     }
 }

@@ -175,3 +175,17 @@ Notes
 - The API accepts and returns ISO-8601 instants (UTC), e.g. "2026-02-03T10:00:00Z".
 - Calendar and meeting IDs are UUIDs.
 - For more details about the DB schema and constraints see `src/main/resources/db/migration/V1__init.sql`.
+
+
+Basic compile & unit tests
+
+- mvn test
+
+Run only the added controller unit tests:
+- mvn -Dtest=CalendarControllerTest,MeetingControllerTest test
+
+Run only the integration Testcontainers test (requires Docker running)
+- mvn -Dtest=FullStackIT test
+
+run tests in parallel or with verbose logs
+- mvn -DskipTests=false -T 1C test
