@@ -3,12 +3,12 @@ package com.example.doodle.dto;
 import java.time.Instant;
 import java.util.UUID;
 
-public class SlotDTO {
-    public UUID id;
-    public UUID calendarId;
-    public Instant startTime;
-    public Instant endTime;
-    public int capacity;
-    public int reservedCount;
-    public String status;
-}
+public record SlotDTO(
+    UUID id,
+    UUID calendarId,
+    Instant startTime,
+    Instant endTime,
+    int capacity,
+    int reservedCount,
+    String status
+) {}

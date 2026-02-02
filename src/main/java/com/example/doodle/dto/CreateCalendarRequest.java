@@ -4,12 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import java.util.UUID;
 
-public class CreateCalendarRequest {
-    @NotBlank
-    public String name;
-
-    @NotNull
-    public UUID ownerId;
-
-    public String defaultTimeZone;
-}
+public record CreateCalendarRequest(
+        @NotBlank String name,
+        @NotNull UUID ownerId,
+        String defaultTimeZone
+) {}

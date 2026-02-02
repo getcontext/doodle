@@ -7,14 +7,12 @@ import java.util.List;
 import java.util.UUID;
 
 @ValidMeetingRequest
-public class MeetingCreateRequest {
-    @NotBlank
-    public String title;
-    public UUID calendarId;
-    @NotNull
-    public UUID organizerId;
-    public UUID slotId; // optional
-    public Instant startTime; // optional if slotId provided
-    public Instant endTime;   // optional if slotId provided
-    public List<String> participantEmails;
-}
+public record MeetingCreateRequest(
+        @NotBlank String title,
+        UUID calendarId,
+        @NotNull UUID organizerId,
+        UUID slotId,
+        Instant startTime,
+        Instant endTime,
+        List<String> participantEmails
+) {}

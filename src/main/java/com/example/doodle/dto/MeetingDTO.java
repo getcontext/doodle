@@ -4,13 +4,13 @@ import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
-public class MeetingDTO {
-    public UUID id;
-    public UUID calendarId;
-    public String title;
-    public UUID organizerId;
-    public Instant startTime;
-    public Instant endTime;
-    public String status;
-    public List<String> participantEmails;
-}
+public record MeetingDTO(
+    UUID id,
+    UUID calendarId,
+    String title,
+    UUID organizerId,
+    Instant startTime,
+    Instant endTime,
+    String status,
+    List<String> participantEmails
+) {}
