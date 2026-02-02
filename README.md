@@ -13,6 +13,7 @@ docker-compose up --build
 2. API will be available at http://localhost:8080
 
 Health: http://localhost:8080/actuator/health
+Info: http://localhost:8080/actuator/info
 Metrics (Prometheus): http://localhost:8080/actuator/prometheus
 
 Basic usage:
