@@ -1,0 +1,5 @@
+# src/test/resources/application-testcontainers.yml
+spring:
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
