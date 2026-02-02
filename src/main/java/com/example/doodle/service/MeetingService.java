@@ -31,18 +31,18 @@ public class MeetingService {
     @Transactional
     public Meeting scheduleMeeting(MeetingCreateRequest req) {
         // if slotId provided, reserve it atomically
-        if (req.slotId != null) {
+        if (req.slotId() != null) {
             // try increment reserved count
-            int updated = slotRepository.tryIncrementReservedCount(req.slotId);
+            int updated = slotRepository.tryIncrementReservedCount(req.slotId());
             if (updated == 0) {
                 throw new IllegalStateException("Slot is full or not available");
             }
             // load slot for times
-            Slot slot = slotRepository.findById(req.slotId).orElseThrow(() -> new IllegalStateException("Slot not found"));
+            Slot slot = slotRepository.findById(req.slotId()).orElseThrow(() -> new IllegalStateException("Slot not found"));
             Meeting m = new Meeting();
             m.setCalendarId(slot.getCalendarId());
-            m.setTitle(req.title);
-            m.setOrganizerId(req.organizerId);
+            m.setTitle(req.title());
+            m.setOrganizerId(req.organizerId());
             m.setStartTime(slot.getStartTime());
             m.setEndTime(slot.getEndTime());
             m.setStatus("SCHEDULED");
@@ -55,8 +55,8 @@ public class MeetingService {
             }
             // add participants
             List<Participant> parts = new ArrayList<>();
-            if (req.participantEmails != null) {
-                for (String email : req.participantEmails) {
+            if (req.participantEmails() != null) {
+                for (String email : req.participantEmails()) {
                     Participant p = new Participant();
                     p.setMeetingId(saved.getId());
                     p.setEmail(email);
@@ -69,17 +69,17 @@ public class MeetingService {
 
         // otherwise schedule by start/end, rely on DB exclusion constraint
         Meeting m = new Meeting();
-        m.setCalendarId(req.calendarId);
-        m.setTitle(req.title);
-        m.setOrganizerId(req.organizerId);
-        m.setStartTime(req.startTime);
-        m.setEndTime(req.endTime);
+        m.setCalendarId(req.calendarId());
+        m.setTitle(req.title());
+        m.setOrganizerId(req.organizerId());
+        m.setStartTime(req.startTime());
+        m.setEndTime(req.endTime());
         m.setStatus("SCHEDULED");
         try {
             Meeting saved = meetingRepository.save(m);
-            if (req.participantEmails != null) {
+            if (req.participantEmails() != null) {
                 List<Participant> parts = new ArrayList<>();
-                for (String email : req.participantEmails) {
+                for (String email : req.participantEmails()) {
                     Participant p = new Participant();
                     p.setMeetingId(saved.getId());
                     p.setEmail(email);

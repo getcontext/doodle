@@ -8,8 +8,8 @@ public class MeetingRequestValidator implements ConstraintValidator<ValidMeeting
     @Override
     public boolean isValid(MeetingCreateRequest req, ConstraintValidatorContext context) {
         if (req == null) return true; // other @NotNull handles null
-        if (req.slotId != null) return true;
-        if (req.startTime != null && req.endTime != null && req.endTime.isAfter(req.startTime)) return true;
+        if (req.slotId() != null) return true;
+        if (req.startTime() != null && req.endTime() != null && req.endTime().isAfter(req.startTime())) return true;
 
         // build nice message
         context.disableDefaultConstraintViolation();

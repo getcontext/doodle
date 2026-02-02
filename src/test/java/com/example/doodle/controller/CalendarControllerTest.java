@@ -35,13 +35,11 @@ public class CalendarControllerTest {
 
     @Test
     public void createCalendar_happyPath() throws Exception {
-        CreateCalendarRequest req = new CreateCalendarRequest();
-        req.name = "Team";
-        req.ownerId = UUID.randomUUID();
+        CreateCalendarRequest req = new CreateCalendarRequest("Team", UUID.randomUUID(), null);
 
         Calendar saved = new Calendar();
-        saved.setName(req.name);
-        saved.setOwnerId(req.ownerId);
+        saved.setName(req.name());
+        saved.setOwnerId(req.ownerId());
 
         given(calendarRepository.save(any(Calendar.class))).willReturn(saved);
 
@@ -54,9 +52,8 @@ public class CalendarControllerTest {
 
     @Test
     public void createCalendar_validationError() throws Exception {
-        CreateCalendarRequest req = new CreateCalendarRequest();
-        // missing name
-        req.ownerId = UUID.randomUUID();
+        // missing name: pass null for name
+        CreateCalendarRequest req = new CreateCalendarRequest(null, UUID.randomUUID(), null);
 
         mvc.perform(post("/api/v1/calendars")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -67,16 +64,13 @@ public class CalendarControllerTest {
 
     @Test
     public void createSlot_happyPath() throws Exception {
-        CreateSlotRequest req = new CreateSlotRequest();
-        req.startTime = Instant.parse("2026-02-03T10:00:00Z");
-        req.endTime = Instant.parse("2026-02-03T11:00:00Z");
-        req.capacity = 2;
+        CreateSlotRequest req = new CreateSlotRequest(Instant.parse("2026-02-03T10:00:00Z"), Instant.parse("2026-02-03T11:00:00Z"), 2);
 
         Slot s = new Slot();
         s.setCalendarId(UUID.randomUUID());
-        s.setStartTime(req.startTime);
-        s.setEndTime(req.endTime);
-        s.setCapacity(req.capacity);
+        s.setStartTime(req.startTime());
+        s.setEndTime(req.endTime());
+        s.setCapacity(req.capacity());
 
         given(slotService.createSlot(any(UUID.class), any(CreateSlotRequest.class))).willReturn(s);
 

@@ -22,9 +22,9 @@ public class SlotService {
     public Slot createSlot(UUID calendarId, CreateSlotRequest req) {
         Slot s = new Slot();
         s.setCalendarId(calendarId);
-        s.setStartTime(req.startTime);
-        s.setEndTime(req.endTime);
-        s.setCapacity(req.capacity);
+        s.setStartTime(req.startTime());
+        s.setEndTime(req.endTime());
+        s.setCapacity(req.capacity());
         s.setReservedCount(0);
         s.setStatus("AVAILABLE");
         return slotRepository.save(s);

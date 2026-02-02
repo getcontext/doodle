@@ -31,9 +31,9 @@ public class CalendarController {
     @PostMapping("/calendars")
     public ResponseEntity<Calendar> createCalendar(@Valid @RequestBody CreateCalendarRequest req) {
         Calendar c = new Calendar();
-        c.setName(req.name);
-        c.setOwnerId(req.ownerId);
-        c.setDefaultTimeZone(req.defaultTimeZone);
+        c.setName(req.name());
+        c.setOwnerId(req.ownerId());
+        c.setDefaultTimeZone(req.defaultTimeZone());
         Calendar saved = calendarRepository.save(c);
         return ResponseEntity.status(201).body(saved);
     }
@@ -61,14 +61,14 @@ public class CalendarController {
     }
 
     private SlotDTO toDto(Slot s) {
-        SlotDTO d = new SlotDTO();
-        d.id = s.getId();
-        d.calendarId = s.getCalendarId();
-        d.startTime = s.getStartTime();
-        d.endTime = s.getEndTime();
-        d.capacity = s.getCapacity();
-        d.reservedCount = s.getReservedCount();
-        d.status = s.getStatus();
-        return d;
+        return new SlotDTO(
+                s.getId(),
+                s.getCalendarId(),
+                s.getStartTime(),
+                s.getEndTime(),
+                s.getCapacity(),
+                s.getReservedCount(),
+                s.getStatus()
+        );
     }
 }

@@ -35,14 +35,11 @@ public class MeetingControllerTest {
 
     @Test
     public void createMeeting_happyPath_withSlot() throws Exception {
-        MeetingCreateRequest req = new MeetingCreateRequest();
-        req.title = "Standup";
-        req.organizerId = UUID.randomUUID();
-        req.slotId = UUID.randomUUID();
+        MeetingCreateRequest req = new MeetingCreateRequest("Standup", null, UUID.randomUUID(), UUID.randomUUID(), null, null, null);
 
         Meeting m = new Meeting();
-        m.setTitle(req.title);
-        m.setOrganizerId(req.organizerId);
+        m.setTitle(req.title());
+        m.setOrganizerId(req.organizerId());
         m.setCalendarId(UUID.randomUUID());
         m.setStartTime(Instant.parse("2026-02-03T10:00:00Z"));
         m.setEndTime(Instant.parse("2026-02-03T10:30:00Z"));
@@ -62,9 +59,8 @@ public class MeetingControllerTest {
 
     @Test
     public void createMeeting_validationError() throws Exception {
-        MeetingCreateRequest req = new MeetingCreateRequest();
         // missing title and slot/start-end -> invalid
-        req.organizerId = UUID.randomUUID();
+        MeetingCreateRequest req = new MeetingCreateRequest(null, null, UUID.randomUUID(), null, null, null, null);
 
         mvc.perform(post("/api/v1/meetings")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -75,10 +71,7 @@ public class MeetingControllerTest {
 
     @Test
     public void createMeeting_slotFull_returnsConflict() throws Exception {
-        MeetingCreateRequest req = new MeetingCreateRequest();
-        req.title = "Standup";
-        req.organizerId = UUID.randomUUID();
-        req.slotId = UUID.randomUUID();
+        MeetingCreateRequest req = new MeetingCreateRequest("Standup", null, UUID.randomUUID(), UUID.randomUUID(), null, null, null);
 
         given(meetingService.scheduleMeeting(any(MeetingCreateRequest.class))).willThrow(new IllegalStateException("Slot is full or not available"));
 
