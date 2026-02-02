@@ -30,24 +30,148 @@ Notes:
 
 Endpoints & examples
 
-Create calendar
-POST /api/v1/calendars
-Request JSON { "name": "Team Calendar", "ownerId": "11111111-1111-1111-1111-111111111111", "defaultTimeZone": "UTC" }
-Returns 201 with the saved Calendar entity (JSON representation of the JPA entity).
+API examples (curl / PowerShell)
 
-Create slot for a calendar
-POST /api/v1/calendars/{calendarId}/slots
-Request JSON (CreateSlotRequest already exists) { "startTime": "2026-02-03T10:00:00Z", "endTime": "2026-02-03T11:00:00Z", "capacity": 2 }
-Returns 201 with SlotDTO: { "id": "...", "calendarId": "...", "startTime":"2026-02-03T10:00:00Z", "endTime":"2026-02-03T11:00:00Z", "capacity": 2, "reservedCount": 0, "status": "AVAILABLE" }
+1) Create a calendar (PowerShell)
 
-List slots
-GET /api/v1/calendars/{calendarId}/slots?from=2026-02-01T00:00:00Z&to=2026-03-01T00:00:00Z
-from/to are optional ISO-8601 instant strings. If omitted, from=Instant.EPOCH, to=now+1year.
-Returns List<slotdto>.</slotdto>
+```powershell
+$body = @{
+  name = 'Team Calendar'
+  ownerId = '11111111-1111-1111-1111-111111111111'
+  defaultTimeZone = 'UTC'
+} | ConvertTo-Json -Depth 3
 
-Create meeting
-POST /api/v1/meetings
-Two ways to schedule:
-By slotId (server will attempt to reserve the slot atomically and create the meeting): { "title": "Sync", "slotId": "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa", "organizerId": "11111111-1111-1111-1111-111111111111", "participantEmails": ["a@example.com","b@example.com"] }
-By start/end + calendarId (no slot): { "title": "Sync", "calendarId": "22222222-2222-2222-2222-222222222222", "organizerId": "11111111-1111-1111-1111-111111111111", "startTime":"2026-02-03T10:00:00Z", "endTime":"2026-02-03T11:00:00Z", "participantEmails": ["a@example.com"] }
-Returns 201 with MeetingDTO including participantEmails.
+Invoke-RestMethod -Method Post -Uri 'http://localhost:8080/api/v1/calendars' -ContentType 'application/json' -Body $body
+```
+
+(curl)
+
+```bash
+curl -X POST http://localhost:8080/api/v1/calendars \
+  -H 'Content-Type: application/json' \
+  -d '{"name":"Team Calendar","ownerId":"11111111-1111-1111-1111-111111111111","defaultTimeZone":"UTC"}'
+```
+
+Sample response (201 Created)
+
+```json
+{
+  "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "name": "Team Calendar",
+  "ownerId": "11111111-1111-1111-1111-111111111111",
+  "defaultTimeZone": "UTC",
+  "createdAt": "2026-02-02T12:00:00Z"
+}
+```
+
+2) Create a slot for a calendar
+
+PowerShell
+
+```powershell
+$slot = @{
+  startTime = '2026-02-03T10:00:00Z'
+  endTime   = '2026-02-03T11:00:00Z'
+  capacity  = 2
+} | ConvertTo-Json
+
+Invoke-RestMethod -Method Post -Uri "http://localhost:8080/api/v1/calendars/$calendarId/slots" -ContentType 'application/json' -Body $slot
+```
+
+curl
+
+```bash
+curl -X POST "http://localhost:8080/api/v1/calendars/<CALENDAR_ID>/slots" \
+  -H 'Content-Type: application/json' \
+  -d '{"startTime":"2026-02-03T10:00:00Z","endTime":"2026-02-03T11:00:00Z","capacity":2}'
+```
+
+Sample response (201 Created)
+
+```json
+{
+  "id": "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+  "calendarId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "startTime": "2026-02-03T10:00:00Z",
+  "endTime": "2026-02-03T11:00:00Z",
+  "capacity": 2,
+  "reservedCount": 0,
+  "status": "AVAILABLE"
+}
+```
+
+3) List slots (curl)
+
+```bash
+curl "http://localhost:8080/api/v1/calendars/<CALENDAR_ID>/slots?from=2026-02-01T00:00:00Z&to=2026-03-01T00:00:00Z"
+```
+
+4) Create meeting by slotId (PowerShell)
+
+```powershell
+$meeting = @{
+  title = 'Sync'
+  slotId = '3fa85f64-5717-4562-b3fc-2c963f66afa6'
+  organizerId = '11111111-1111-1111-1111-111111111111'
+  participantEmails = @('a@example.com','b@example.com')
+} | ConvertTo-Json -Depth 4
+
+Invoke-RestMethod -Method Post -Uri 'http://localhost:8080/api/v1/meetings' -ContentType 'application/json' -Body $meeting
+```
+
+curl
+
+```bash
+curl -X POST http://localhost:8080/api/v1/meetings \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"Sync","slotId":"3fa85f64-5717-4562-b3fc-2c963f66afa6","organizerId":"11111111-1111-1111-1111-111111111111","participantEmails":["a@example.com"]}'
+```
+
+Sample response (201 Created)
+
+```json
+{
+  "id": "c0a8012e-0000-0000-0000-000000000000",
+  "calendarId": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "title": "Sync",
+  "organizerId": "11111111-1111-1111-1111-111111111111",
+  "startTime": "2026-02-03T10:00:00Z",
+  "endTime": "2026-02-03T11:00:00Z",
+  "status": "SCHEDULED",
+  "participantEmails": ["a@example.com","b@example.com"]
+}
+```
+
+5) Create meeting by start/end (no slot)
+
+```bash
+curl -X POST http://localhost:8080/api/v1/meetings \
+  -H 'Content-Type: application/json' \
+  -d '{"title":"Planning","calendarId":"f47ac10b-58cc-4372-a567-0e02b2c3d479","organizerId":"11111111-1111-1111-1111-111111111111","startTime":"2026-02-05T09:00:00Z","endTime":"2026-02-05T10:00:00Z","participantEmails":["x@example.com"]}'
+```
+
+6) Read endpoints
+
+- Get calendar: GET /api/v1/calendars/{calendarId}
+- Get meeting:  GET /api/v1/meetings/{meetingId}
+- List meetings: GET /api/v1/meetings?calendarId=<CALENDAR_ID>&from=<ISO>&to=<ISO>
+
+Errors and validation
+
+- Validation errors (missing required fields, invalid times, etc.) return 400 Bad Request with JSON details:
+
+```json
+{ "error": "Validation failed", "details": [ "field: message", ... ] }
+```
+
+- Business conflicts (e.g., slot full, meeting overlaps) return 409 Conflict with a JSON error message:
+
+```json
+{ "error": "Slot is full or not available" }
+```
+
+Notes
+
+- The API accepts and returns ISO-8601 instants (UTC), e.g. "2026-02-03T10:00:00Z".
+- Calendar and meeting IDs are UUIDs.
+- For more details about the DB schema and constraints see `src/main/resources/db/migration/V1__init.sql`.
