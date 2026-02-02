@@ -13,8 +13,11 @@ public class User {
     @Column(unique = true, nullable = false)
     private String email;
 
+    @Column(nullable = false)
     private String displayName;
+    @Column(nullable = false)
     private String timeZone;
+    @Column(nullable = false)
     private Instant createdAt = Instant.now();
 
     public User() {
